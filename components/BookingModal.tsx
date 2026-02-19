@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar as CalendarIcon, CheckCircle, ShieldCheck, ChevronLeft, ChevronRight, Clock, User, Wallet, Copy, RefreshCw, Smartphone, Crown, Star, Layers } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ const PRESET_TIMES = [
 ];
 
 export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, region, carModel, estimatedPrice }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<'schedule' | 'payment' | 'success' | 'membership'>('schedule');
 
   // Calendar State
@@ -165,6 +167,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
     return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date);
   };
 
+  // Helper to translate region if it's a key, otherwise return as is (fallback)
+  const displayRegion = region.includes('_') ? t(`regions.${region}`) : region;
+
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in" onClick={onClose}>
       <div
@@ -175,11 +180,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
         <div className="flex justify-between items-center p-6 border-b border-neutral-800 bg-neutral-900/50">
           <div>
             <h3 className="text-white font-serif text-xl tracking-wide">
-              {step === 'membership' ? 'Lumière Lifetime' : (step === 'success' ? 'Reservation Confirmed' : 'Private Atelier Reservation')}
+              {step === 'membership' ? t('booking.membershipTitle') : (step === 'success' ? t('booking.successTitle') : t('booking.title'))}
             </h3>
             {step !== 'membership' && (
               <p className="text-xs text-gold-400 uppercase tracking-widest mt-1">
-                {region} • {carModel}
+                {displayRegion} • {carModel}
               </p>
             )}
           </div>
@@ -199,9 +204,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                   <ShieldCheck className="w-6 h-6 text-gold-500" />
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-1">LUMIÈRE Master Atelier</h4>
+                  <h4 className="text-white font-medium mb-1">{t('booking.masterAtelier')}</h4>
                   <p className="text-neutral-400 text-sm leading-relaxed">
-                    선택하신 {region} 지역의 마스터 아틀리에는 Lumière의 엄격한 품질 기준을 통과한 최상위 시공점입니다.
+                    {t('booking.atelierInfo', { region: displayRegion })}
                   </p>
                 </div>
               </div>
@@ -210,7 +215,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               <div className="relative" ref={calendarRef}>
                 <label className="block text-xs uppercase tracking-widest text-neutral-500 mb-4 flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />
-                  Select Date
+                  {t('booking.selectDate')}
                 </label>
 
                 <button
@@ -218,7 +223,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                   className={`w-full text-left p-4 border rounded-sm flex justify-between items-center transition-all ${showCalendar || selectedDate ? 'border-gold-500 bg-gold-500/5 text-white' : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'}`}
                 >
                   <span className="font-serif text-lg">
-                    {selectedDate ? formatDateDisplay(selectedDate) : '날짜를 선택해주세요'}
+                    {selectedDate ? formatDateDisplay(selectedDate) : t('booking.selectDatePlaceholder')}
                   </span>
                   {selectedDate && <span className="text-xs uppercase tracking-wider text-gold-400">{formatWeekday(selectedDate)}</span>}
                 </button>
@@ -251,7 +256,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               <div className={!selectedDate ? 'opacity-30 pointer-events-none' : ''}>
                 <label className="block text-xs uppercase tracking-widest text-neutral-500 mb-4 flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Select Time
+                  {t('booking.selectTime')}
                 </label>
 
                 <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mb-4">
@@ -287,7 +292,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                         : 'border-neutral-800 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'}
                     `}
                   >
-                    <span>원하는 시간이 목록에 없으신가요? (직접 입력)</span>
+                    <span>{t('booking.customTime')}</span>
                   </button>
 
                   {isCustomTime && (
@@ -302,7 +307,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                         className="w-full bg-neutral-900 border border-gold-500 p-4 text-white text-center text-lg focus:outline-none rounded-sm"
                       />
                       <p className="text-[10px] text-neutral-500 mt-2 text-center">
-                        * 아틀리에 상황에 따라 예약 확정 시 시간이 조정될 수 있습니다.
+                        {t('booking.timeNote')}
                       </p>
                     </div>
                   )}
@@ -314,7 +319,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                 onClick={() => setStep('payment')}
                 className="w-full bg-white text-black py-4 font-bold tracking-widest uppercase hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-sm mt-8"
               >
-                PROCEED TO CONFIRMATION
+                {t('booking.proceedBtn')}
               </button>
             </div>
           )}
@@ -324,11 +329,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               {/* Summary */}
               <div className="bg-neutral-800/50 p-6 rounded-sm border border-neutral-700">
                 <div className="flex justify-between text-neutral-400 text-sm mb-3">
-                  <span>Service Estimate</span>
+                  <span>{t('booking.serviceEstimate')}</span>
                   <span>₩{estimatedPrice.toLocaleString()}~</span>
                 </div>
                 <div className="flex justify-between text-white text-base font-medium pt-3 border-t border-neutral-700">
-                  <span>Reservation Deposit (10%)</span>
+                  <span>{t('booking.deposit')}</span>
                   <span className="text-gold-400">₩{depositAmount.toLocaleString()}</span>
                 </div>
               </div>
@@ -336,19 +341,19 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               {/* Customer Information */}
               <div className="space-y-4">
                 <h4 className="text-white text-sm uppercase tracking-widest flex items-center gap-2">
-                  <User className="w-4 h-4" /> Customer Information
+                  <User className="w-4 h-4" /> {t('booking.customerInfo')}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="text"
-                    placeholder="Customer Name (성함)"
+                    placeholder={t('booking.namePlaceholder')}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="bg-neutral-900 border border-neutral-700 p-4 text-white focus:border-gold-500 focus:outline-none transition-colors placeholder-neutral-600 rounded-sm"
                   />
                   <input
                     type="tel"
-                    placeholder="Phone Number (연락처)"
+                    placeholder={t('booking.phonePlaceholder')}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     className="bg-neutral-900 border border-neutral-700 p-4 text-white focus:border-gold-500 focus:outline-none transition-colors placeholder-neutral-600 rounded-sm"
@@ -359,20 +364,20 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               {/* Payment Method */}
               <div className="space-y-4">
                 <h4 className="text-white text-sm uppercase tracking-widest flex items-center gap-2">
-                  <Wallet className="w-4 h-4" /> Deposit Method
+                  <Wallet className="w-4 h-4" /> {t('booking.depositMethod')}
                 </h4>
                 <div className="flex gap-4">
                   <button
                     onClick={() => setPaymentMethod('BANK')}
                     className={`flex-1 py-4 border rounded-sm transition-all flex items-center justify-center gap-2 ${paymentMethod === 'BANK' ? 'bg-gold-500 text-black border-gold-500 font-bold' : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
                   >
-                    <Smartphone className="w-4 h-4" /> Bank Transfer
+                    <Smartphone className="w-4 h-4" /> {t('booking.bankTransfer')}
                   </button>
                   <button
                     onClick={() => setPaymentMethod('USDT')}
                     className={`flex-1 py-4 border rounded-sm transition-all flex items-center justify-center gap-2 ${paymentMethod === 'USDT' ? 'bg-blue-600 text-white border-blue-600 font-bold' : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
                   >
-                    <Layers className="w-4 h-4" /> Arbitrum
+                    <Layers className="w-4 h-4" /> {t('booking.arbitrum')}
                   </button>
                 </div>
 
@@ -384,22 +389,22 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                         <div className="w-32 h-32 bg-neutral-800 rounded-sm mb-4 flex items-center justify-center">
                           <span className="text-neutral-500 text-xs">QR CODE AREA</span>
                         </div>
-                        <p className="text-neutral-400 text-xs">Scan to Transfer (KakaoPay / Toss)</p>
+                        <p className="text-neutral-400 text-xs">{t('booking.scanKakao')}</p>
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">Bank</span>
+                          <span className="text-neutral-500">{t('booking.bank')}</span>
                           <span className="text-white">Shinhan Bank (신한은행)</span>
                         </div>
                         <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">Account</span>
+                          <span className="text-neutral-500">{t('booking.account')}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-white font-mono">110-123-456789</span>
                             <Copy className="w-3 h-3 text-neutral-500 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText('110-123-456789')} />
                           </div>
                         </div>
                         <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">Holder</span>
+                          <span className="text-neutral-500">{t('booking.holder')}</span>
                           <span className="text-white">Lumière Studio</span>
                         </div>
                       </div>
@@ -414,12 +419,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                             className="w-full h-full"
                           />
                         </div>
-                        <p className="text-neutral-400 text-xs">Scan to Transfer (Arbitrum One)</p>
+                        <p className="text-neutral-400 text-xs">{t('booking.scanArbitrum')}</p>
                       </div>
 
                       <div className="bg-neutral-800 p-4 rounded-sm flex justify-between items-center">
                         <div className="text-xs">
-                          <p className="text-neutral-400 mb-1">Exchange Rate</p>
+                          <p className="text-neutral-400 mb-1">{t('booking.exchangeRate')}</p>
                           <p className="text-blue-400 font-bold">1 USDT ≈ ₩{usdtRate.toLocaleString()}</p>
                         </div>
                         <button onClick={fetchUsdtRate} className="p-2 hover:bg-white/10 rounded-full transition-colors">
@@ -429,23 +434,23 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
 
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">Network</span>
+                          <span className="text-neutral-500">{t('booking.network')}</span>
                           <span className="text-white font-bold text-blue-500">Arbitrum One</span>
                         </div>
                         <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">Address</span>
+                          <span className="text-neutral-500">{t('booking.address')}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-white font-mono text-xs truncate max-w-[150px]">0x5c98...e756</span>
                             <Copy className="w-3 h-3 text-neutral-500 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText('0x5c9856c32eaff6659aae211d816b45a8b50de756')} />
                           </div>
                         </div>
                         <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">Total USDT</span>
+                          <span className="text-neutral-500">{t('booking.totalUSDT')}</span>
                           <span className="text-white font-bold">{usdtAmount} USDT</span>
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs uppercase tracking-widest text-neutral-500 mb-2">TXID (Last 4 Digits)</label>
+                        <label className="block text-xs uppercase tracking-widest text-neutral-500 mb-2">{t('booking.txid')}</label>
                         <input
                           type="text"
                           placeholder="e.g. 8f2a"
@@ -468,7 +473,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                     : 'bg-blue-600 text-white hover:bg-blue-500'}`
                 }
               >
-                COMPLETE RESERVATION
+                {t('booking.completeBtn')}
               </button>
             </div>
           )}
@@ -478,12 +483,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               <div className="w-20 h-20 bg-gold-500/10 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="w-10 h-10 text-gold-500" />
               </div>
-              <h3 className="text-2xl font-serif text-white mb-4">Reservation Confirmed</h3>
+              <h3 className="text-2xl font-serif text-white mb-4">{t('booking.successTitle')}</h3>
               <p className="text-neutral-400 max-w-sm mb-8 leading-relaxed word-keep-all">
-                예약이 성공적으로 완료되었습니다.
-                <br />
-                담당 아틀리에 마스터가 입금 확인 후
-                문자 또는 카카오톡을 통해 상세 일정을 안내해 드릴 예정입니다.
+                <Trans i18nKey="booking.successDesc" />
               </p>
               <div className="bg-neutral-800 p-6 w-full max-w-sm rounded-sm mb-8 text-left">
                 <div className="flex justify-between mb-2">
@@ -509,13 +511,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                   onClick={() => setStep('membership')}
                   className="w-full px-8 py-3 bg-white/5 border border-gold-500/30 text-gold-400 hover:bg-gold-500 hover:text-black transition-colors uppercase text-sm tracking-widest rounded-sm flex items-center justify-center gap-2"
                 >
-                  <Crown className="w-4 h-4" /> 라이프타임 멤버십 혜택 보기
+                  <Crown className="w-4 h-4" /> {t('booking.membershipBtn')}
                 </button>
                 <button
                   onClick={onClose}
                   className="w-full px-8 py-3 border border-neutral-700 text-white hover:bg-white hover:text-black transition-colors uppercase text-sm tracking-widest rounded-sm"
                 >
-                  Close Window
+                  {t('booking.closeBtn')}
                 </button>
               </div>
             </div>
@@ -526,8 +528,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
               <div className="w-16 h-16 bg-gold-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(198,154,38,0.5)]">
                 <Crown className="w-8 h-8 text-black" />
               </div>
-              <h3 className="text-3xl font-serif text-white mb-2">LUMIÈRE Lifetime</h3>
-              <p className="text-gold-400 text-sm uppercase tracking-[0.3em] mb-10">Exclusive Membership</p>
+              <h3 className="text-3xl font-serif text-white mb-2">{t('booking.membershipTitle')}</h3>
+              <p className="text-gold-400 text-sm uppercase tracking-[0.3em] mb-10">{t('booking.membershipSubtitle')}</p>
 
               <div className="w-full space-y-4 mb-10">
                 <div className="bg-white/5 p-4 rounded-sm border border-white/10 flex items-center gap-4">
@@ -555,13 +557,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
 
               <div className="w-full max-w-sm space-y-3">
                 <button className="w-full bg-gold-500 text-black py-4 font-bold tracking-widest uppercase hover:bg-gold-400 transition-colors rounded-sm">
-                  멤버십 가입 문의하기
+                  {t('booking.membershipInquiry')}
                 </button>
                 <button
                   onClick={onClose}
                   className="w-full py-3 text-neutral-500 hover:text-white transition-colors text-xs uppercase tracking-widest"
                 >
-                  닫기
+                  {t('booking.closeBtn')}
                 </button>
               </div>
             </div>
