@@ -41,16 +41,20 @@ function App() {
           <button onClick={() => setIsCarCareOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.carCare')}</button>
           <button onClick={() => setIsProcessOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.process')}</button>
           <button onClick={() => setIsAtelierOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.atelier')}</button>
-          <LanguageSwitcher />
         </div>
       </nav>
+
+      {/* Language Switcher - Fixed position, always visible, outside mix-blend-difference */}
+      <div className="fixed top-5 right-6 z-[60]">
+        <LanguageSwitcher />
+      </div>
 
       <main>
         <Hero
           onOpenEstimator={() => setIsEstimatorOpen(true)}
           onOpenCarCare={() => setIsCarCareOpen(true)}
         />
-        <Estimator isOpen={isEstimatorOpen} onClose={() => setIsEstimatorOpen(false)} />
+        <Estimator isOpen={isEstimatorOpen} onClose={() => setIsEstimatorOpen(false)} onOpenBooking={(region, carModel, price) => { setBookingData({ region, carModel, price }); setIsBookingOpen(true); }} />
         <Atelier isOpen={isAtelierOpen} onClose={() => setIsAtelierOpen(false)} />
         <Process isOpen={isProcessOpen} onClose={() => setIsProcessOpen(false)} />
         <CarCare
