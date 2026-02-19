@@ -32,22 +32,20 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-gold-500 selection:text-black">
-      <nav className="fixed top-0 w-full z-50 px-6 py-6 flex justify-between items-center mix-blend-difference">
-        <div className="text-2xl font-serif font-bold tracking-tighter text-white">
+      <nav className="fixed top-0 w-full z-50 px-6 py-6 flex justify-between items-center">
+        <div className="text-2xl font-serif font-bold tracking-tighter text-white mix-blend-difference">
           {t('nav.brand')}
         </div>
-        <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest text-white/80 items-center">
-          <button onClick={() => setIsEstimatorOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.estimator')}</button>
-          <button onClick={() => setIsCarCareOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.carCare')}</button>
-          <button onClick={() => setIsProcessOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.process')}</button>
-          <button onClick={() => setIsAtelierOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.atelier')}</button>
+        <div className="flex gap-6 text-xs uppercase tracking-widest text-white/80 items-center">
+          <div className="hidden md:flex gap-8 items-center mix-blend-difference">
+            <button onClick={() => setIsEstimatorOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.estimator')}</button>
+            <button onClick={() => setIsCarCareOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.carCare')}</button>
+            <button onClick={() => setIsProcessOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.process')}</button>
+            <button onClick={() => setIsAtelierOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.atelier')}</button>
+          </div>
+          <LanguageSwitcher />
         </div>
       </nav>
-
-      {/* Language Switcher - Fixed position, always visible, outside mix-blend-difference */}
-      <div className="fixed top-5 right-6 z-[60]">
-        <LanguageSwitcher />
-      </div>
 
       <main>
         <Hero
