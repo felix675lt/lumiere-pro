@@ -91,7 +91,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in" onClick={onClose}>
       <div
-        className="relative w-full max-w-4xl bg-neutral-900 border border-neutral-800 rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] max-w-[95vw]"
+        className="relative w-full max-w-3xl bg-neutral-900 border border-neutral-800 rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] max-w-[95vw]"
         onClick={e => e.stopPropagation()}
       >
         <button
@@ -179,7 +179,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
               <div className="bg-neutral-800 p-4 rounded-sm flex justify-between items-center mt-6 border border-neutral-700 shrink-0">
                 <span className="text-sm text-neutral-400">Estimated Base Price</span>
                 <span className="text-xl font-serif text-gold-400">
-                  {isEtc ? t('estimator.ask_separately') : `$${estimatedPrice.toLocaleString()}`}
+                  {isEtc ? t('estimator.inquirySeparately') : `$${estimatedPrice.toLocaleString()}`}
                 </span>
               </div>
 
@@ -310,7 +310,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
                 <div className="flex justify-between text-base font-medium pt-3 border-t border-neutral-700 text-white mt-4">
                   <span>Total Estimated Price</span>
                   <span className="text-gold-400">
-                    {isEtc ? t('estimator.ask_separately') : `$${estimatedPrice.toLocaleString()} USD`}
+                    {isEtc ? t('estimator.inquirySeparately') : `$${estimatedPrice.toLocaleString()} USD`}
                   </span>
                 </div>
               </div>

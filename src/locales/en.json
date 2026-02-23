@@ -25,6 +25,9 @@
         "outtro": "Beyond simply protecting the car, ensuring your asset value shines forever.<br />LUMIÈRE proposes the best curation for your vehicle.",
         "studio": "Lumière Studio"
     },
+    "customParts": {
+        "title": "3D Custom Parts"
+    },
     "process": {
         "sectionTitle": "The Process",
         "title": "Obsessive Journey<br />Towards Perfection",
@@ -117,6 +120,7 @@
         "network": "Network",
         "address": "Address",
         "txid": "TXID (Last 4 Digits)",
+        "txid_label": "TXID (Last 4 Digits)",
         "completeBtn": "COMPLETE RESERVATION",
         "successDesc": "Reservation successfully completed.<br />The master atelier in charge will guide you through the detailed schedule via text or KakaoTalk after confirming the deposit.",
         "membershipBtn": "View Lifetime Membership Benefits",

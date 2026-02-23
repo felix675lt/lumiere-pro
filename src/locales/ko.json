@@ -25,6 +25,9 @@
         "outtro": "단순히 차를 보호하는 것을 넘어, 귀하의 자산 가치가 영원히 빛날 수 있도록.<br />LUMIÈRE가 당신의 차량을 위한 최고의 큐레이션을 제안합니다.",
         "studio": "Lumière Studio"
     },
+    "customParts": {
+        "title": "3D Custom Parts"
+    },
     "process": {
         "sectionTitle": "The Process",
         "title": "완벽을 향한<br />집요한 여정",
@@ -117,6 +120,7 @@
         "network": "Network",
         "address": "Address",
         "txid": "TXID (Last 4 Digits)",
+        "txid_label": "TXID 마지막 4자리",
         "completeBtn": "COMPLETE RESERVATION",
         "successDesc": "예약이 성공적으로 완료되었습니다.<br />담당 아틀리에 마스터가 입금 확인 후 문자 또는 카카오톡을 통해 상세 일정을 안내해 드릴 예정입니다.",
         "membershipBtn": "라이프타임 멤버십 혜택 보기",
