@@ -8,6 +8,7 @@ import { CarCare } from './components/CarCare';
 import { BookingModal } from './components/BookingModal';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { CustomParts3D } from './components/CustomParts3D';
 
 function App() {
   const { t } = useTranslation();
@@ -15,6 +16,7 @@ function App() {
   const [isAtelierOpen, setIsAtelierOpen] = useState(false);
   const [isProcessOpen, setIsProcessOpen] = useState(false);
   const [isCarCareOpen, setIsCarCareOpen] = useState(false);
+  const [isCustomPartsOpen, setIsCustomPartsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   // App-level Booking Modal State (for Car Care)
@@ -40,6 +42,7 @@ function App() {
           <div className="hidden md:flex gap-8 items-center mix-blend-difference">
             <button onClick={() => setIsEstimatorOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.estimator')}</button>
             <button onClick={() => setIsCarCareOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.carCare')}</button>
+            <button onClick={() => setIsCustomPartsOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.customParts')}</button>
             <button onClick={() => setIsProcessOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.process')}</button>
             <button onClick={() => setIsAtelierOpen(true)} className="hover:text-white transition-colors uppercase">{t('nav.atelier')}</button>
           </div>
@@ -51,6 +54,7 @@ function App() {
         <Hero
           onOpenEstimator={() => setIsEstimatorOpen(true)}
           onOpenCarCare={() => setIsCarCareOpen(true)}
+          onOpenCustomParts={() => setIsCustomPartsOpen(true)}
         />
         <Estimator isOpen={isEstimatorOpen} onClose={() => setIsEstimatorOpen(false)} onOpenBooking={(region, carModel, price) => { setBookingData({ region, carModel, price }); setIsBookingOpen(true); }} />
         <Atelier isOpen={isAtelierOpen} onClose={() => setIsAtelierOpen(false)} />
@@ -60,6 +64,7 @@ function App() {
           onClose={() => setIsCarCareOpen(false)}
           onBook={handleCarCareBook}
         />
+        <CustomParts3D isOpen={isCustomPartsOpen} onClose={() => setIsCustomPartsOpen(false)} />
         <PrivacyPolicy isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
 
         {/* Booking Modal for Car Care */}

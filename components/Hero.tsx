@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 interface HeroProps {
   onOpenEstimator: () => void;
   onOpenCarCare: () => void;
+  onOpenCustomParts: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOpenEstimator, onOpenCarCare }) => {
+export const Hero: React.FC<HeroProps> = ({ onOpenEstimator, onOpenCarCare, onOpenCustomParts }) => {
   const { t } = useTranslation();
 
   return (
@@ -43,8 +44,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenEstimator, onOpenCarCare }) =>
             onClick={onOpenCarCare}
             className="group relative pb-2"
           >
-            <span className="text-sm tracking-[0.2em] uppercase text-white/80 group-hover:text-gold-400 transition-colors duration-500 ease-out">
+            <span className="text-sm tracking-[0.2em] uppercase text-white/80 group-hover:text-gold-400 transition-colors duration-500 ease-out whitespace-nowrap">
               {t('hero.ctaConsult')}
+            </span>
+            <span className="absolute bottom-0 left-0 w-full h-[1px] bg-white/20 group-hover:bg-gold-400 transition-colors duration-500 ease-out"></span>
+          </button>
+
+          <button
+            onClick={onOpenCustomParts}
+            className="group relative pb-2"
+          >
+            <span className="text-sm tracking-[0.2em] uppercase text-white/80 group-hover:text-gold-400 transition-colors duration-500 ease-out whitespace-nowrap">
+              {t('hero.ctaCustomParts')}
             </span>
             <span className="absolute bottom-0 left-0 w-full h-[1px] bg-white/20 group-hover:bg-gold-400 transition-colors duration-500 ease-out"></span>
           </button>

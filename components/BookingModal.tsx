@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar as CalendarIcon, CheckCircle, ShieldCheck, ChevronLeft, ChevronRight, Clock, User, Wallet, Copy, RefreshCw, Smartphone, Crown, Star, Layers } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -32,7 +33,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
   // Payment State
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'BANK' | 'USDT'>('BANK');
+  const [paymentMethod, setPaymentMethod] = useState<'BANK' | 'USDT' | 'PAYPAL'>('BANK');
   const [usdtRate, setUsdtRate] = useState<number>(1450); // Fallback rate
   const [txid, setTxid] = useState('');
   const [isRateLoading, setIsRateLoading] = useState(false);
@@ -40,6 +41,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
   // 10% Deposit
   const depositAmount = Math.round(estimatedPrice * 0.1);
   const usdtAmount = (depositAmount / usdtRate).toFixed(2);
+
+  const handlePayPalApprove = (data: any, actions: any) => {
+    return actions.order.capture().then((details: any) => {
+      setStep('success');
+    });
+  };
+
+  const initialOptions = {
+    clientId: "AdDd-Uz8w-5a-wGlsyroZcP0EdQDg7EgPB5LtQOCvQIGsfQ7o8Hu6pRQI5uOjNgMPTV3YqfGubTBKIjD",
+    currency: "USD",
+    intent: "capture",
+  };
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -379,6 +392,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                   >
                     <Layers className="w-4 h-4" /> {t('booking.arbitrum')}
                   </button>
+                  <button
+                    onClick={() => setPaymentMethod('PAYPAL')}
+                    className={`flex-1 py-4 border rounded-sm transition-all flex items-center justify-center gap-2 ${paymentMethod === 'PAYPAL' ? 'bg-gold-500 text-black border-gold-500 font-bold' : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
+                  >
+                    PayPal
+                  </button>
                 </div>
 
                 {/* Payment Details */}
@@ -407,6 +426,31 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                           <span className="text-neutral-500">{t('booking.holder')}</span>
                           <span className="text-white">Lumière Studio</span>
                         </div>
+                      </div>
+                    </div>
+                  ) : paymentMethod === 'PAYPAL' ? (
+                    <div className="space-y-6">
+                      <div className="bg-neutral-900 border border-neutral-700 p-6 rounded-sm animate-fade-in">
+                        <PayPalScriptProvider options={initialOptions}>
+                          <PayPalButtons
+                            createOrder={(data, actions) => {
+                              return actions.order.create({
+                                intent: "CAPTURE",
+                                purchase_units: [
+                                  {
+                                    description: `Lumiere Booking Deposit for ${carModel}`,
+                                    amount: {
+                                      currency_code: "USD",
+                                      value: (depositAmount / usdtRate).toFixed(2),
+                                    },
+                                  },
+                                ],
+                              });
+                            }}
+                            onApprove={handlePayPalApprove}
+                            style={{ layout: "vertical", color: "gold", shape: "rect", label: "paypal" }}
+                          />
+                        </PayPalScriptProvider>
                       </div>
                     </div>
                   ) : (
@@ -465,16 +509,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                 </div>
               </div>
 
-              <button
-                onClick={handlePayment}
-                className={`w-full py-4 font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2 rounded-sm
-                    ${paymentMethod === 'BANK'
-                    ? 'bg-gold-500 text-black hover:bg-gold-400'
-                    : 'bg-blue-600 text-white hover:bg-blue-500'}`
-                }
-              >
-                {t('booking.completeBtn')}
-              </button>
+              {paymentMethod !== 'PAYPAL' && (
+                <button
+                  onClick={handlePayment}
+                  className={`w-full py-4 font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2 rounded-sm
+                      ${paymentMethod === 'BANK'
+                      ? 'bg-gold-500 text-black hover:bg-gold-400'
+                      : 'bg-blue-600 text-white hover:bg-blue-500'}`
+                  }
+                >
+                  {t('booking.completeBtn')}
+                </button>
+              )}
             </div>
           )}
 
@@ -499,9 +545,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-500 text-xs uppercase">Deposit ({paymentMethod === 'BANK' ? 'Bank' : 'Arbitrum'})</span>
+                  <span className="text-neutral-500 text-xs uppercase">Deposit ({paymentMethod === 'BANK' ? 'Bank' : paymentMethod === 'USDT' ? 'Arbitrum' : 'PayPal'})</span>
                   <span className="text-gold-400 text-sm">
-                    {paymentMethod === 'BANK' ? `₩${depositAmount.toLocaleString()}` : `${usdtAmount} USDT`}
+                    {paymentMethod === 'BANK' ? `₩${depositAmount.toLocaleString()}` : paymentMethod === 'USDT' ? `${usdtAmount} USDT` : `$${(depositAmount / usdtRate).toFixed(2)} USD`}
                   </span>
                 </div>
               </div>

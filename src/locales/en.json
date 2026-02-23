@@ -3,6 +3,7 @@
         "brand": "LUMIÈRE",
         "estimator": "ESTIMATE",
         "carCare": "CAR CARE",
+        "customParts": "3D CUSTOM PARTS",
         "process": "PROCESS",
         "atelier": "ATELIER"
     },
@@ -11,6 +12,7 @@
         "subtitle": "Preserve the value of your vehicle forever.\nLumière PPF Studio goes beyond simple installation\nto curate the intrinsic beauty of your vehicle.",
         "ctaEstimate": "Start Premium Estimate",
         "ctaConsult": "Start Premium Long-term Lifecare Consultation",
+        "ctaCustomParts": "Order 3D Custom Parts",
         "labelWeb": "Premium Automotive Protection Atelier"
     },
     "atelier": {

@@ -3,6 +3,7 @@
         "brand": "LUMIÈRE",
         "estimator": "견적 산출",
         "carCare": "카케어 솔루션",
+        "customParts": "3D 주문 제작",
         "process": "시공 프로세스",
         "atelier": "아틀리에 소개"
     },
@@ -11,6 +12,7 @@
         "subtitle": "당신의 차량이 가진 가치를 영원히 보존합니다.\nLumière PPF Studio는 단순한 시공을 넘어\n차량의 본질적인 아름다움을 큐레이팅합니다.",
         "ctaEstimate": "프리미엄 견적 상담 시작하기",
         "ctaConsult": "프리미엄 롱텀 라이프케어 상담 시작하기",
+        "ctaCustomParts": "3D 커스텀 파츠 주문 제작하기",
         "labelWeb": "Premium Automotive Protection Atelier"
     },
     "atelier": {
