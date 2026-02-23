@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Calendar as CalendarIcon, CheckCircle, ShieldCheck, ChevronLeft, ChevronRight, Clock, User, Wallet, Copy, RefreshCw, Smartphone, Crown, Star, Layers } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { sendAdminNotification } from '../src/utils/email';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -43,7 +44,17 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
   const usdtAmount = (depositAmount / usdtRate).toFixed(2);
 
   const handlePayPalApprove = (data: any, actions: any) => {
-    return actions.order.capture().then((details: any) => {
+    return actions.order.capture().then(async (details: any) => {
+      await sendAdminNotification("예약 접수 (PayPal)", {
+        고객명: customerName,
+        연락처: customerPhone,
+        예약차종: carModel,
+        예약지역: region,
+        예약일정: `${selectedDate?.toLocaleDateString()} ${selectedTime}`,
+        결제방식: 'PayPal',
+        예치금결제액: `$${(depositAmount / usdtRate).toFixed(2)} USD`,
+        총예상견적: `₩${estimatedPrice.toLocaleString()}`
+      });
       setStep('success');
     });
   };
@@ -100,7 +111,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
 
   if (!isOpen) return null;
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!customerName || !customerPhone) {
       alert("Please enter your name and phone number.");
       return;
@@ -110,9 +121,25 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
       return;
     }
 
-    setTimeout(() => {
-      setStep('success');
-    }, 1500);
+    const payload = {
+      고객명: customerName,
+      연락처: customerPhone,
+      예약차종: carModel,
+      예약지역: region,
+      예약일정: `${selectedDate?.toLocaleDateString()} ${selectedTime}`,
+      결제방식: paymentMethod === 'BANK' ? '무통장 입금' : 'USDT (Arbitrum)',
+      예치금결제액: paymentMethod === 'BANK' ? `₩${depositAmount.toLocaleString()}` : `${usdtAmount} USDT`,
+      총예상견적: `₩${estimatedPrice.toLocaleString()}`,
+      TXID: paymentMethod === 'USDT' ? txid : '해당없음'
+    };
+
+    try {
+      await sendAdminNotification(`예약 접수 (${paymentMethod})`, payload);
+    } catch (e) {
+      console.error(e);
+    }
+
+    setStep('success');
   };
 
   // Calendar Logic

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@google/genai": "^1.39.0",
     "@paypal/react-paypal-js": "^8.9.2",
     "i18next": "^25.8.11",

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { X, ChevronRight, CheckCircle, Package, Layers, Car, Mail, Phone, Wallet, RefreshCw, Copy, Send } from 'lucide-react';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { sendAdminNotification } from '../src/utils/email';
 
 interface CustomParts3DProps {
   isOpen: boolean;
@@ -62,7 +63,19 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
   };
 
   const handlePayPalApprove = (data: any, actions: any) => {
-    return actions.order.capture().then((details: any) => {
+    return actions.order.capture().then(async (details: any) => {
+      await sendAdminNotification("3D 커스텀 파츠 주문 (PayPal)", {
+        이름: customerInfo.name,
+        연락처: customerInfo.phone,
+        이메일: customerInfo.email,
+        차종: carModel,
+        주문부품: partType.name,
+        재질: isEtc ? '해당없음' : material.name,
+        결제방식: 'PayPal',
+        결제금액: `$${estimatedPrice} USD`,
+        요구사항: customerInfo.customOrder,
+        추가메모: customerInfo.notes
+      });
       setStep('success');
     });
   };
@@ -305,7 +318,17 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
               <div className="flex-1 min-h-[50px]">
                 {isEtc ? (
                   <button
-                    onClick={() => setStep('success')}
+                    onClick={async () => {
+                      await sendAdminNotification("3D 커스텀 파츠 견적 문의 (기타)", {
+                        이름: customerInfo.name,
+                        연락처: customerInfo.phone,
+                        이메일: customerInfo.email,
+                        차종: carModel,
+                        요구사항: customerInfo.customOrder,
+                        추가메모: customerInfo.notes
+                      });
+                      setStep('success');
+                    }}
                     className="w-full bg-gold-500 text-black py-4 font-bold tracking-widest uppercase hover:bg-gold-400 transition-colors rounded-sm flex items-center justify-center gap-2 mt-4"
                   >
                     <Send className="w-4 h-4" /> Submit Inquiry
@@ -391,8 +414,21 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
                             />
                           </div>
                           <button
-                            onClick={() => {
+                            onClick={async () => {
                               if (!txid) { alert("Please enter the last digits of TXID."); return; }
+                              await sendAdminNotification("3D 커스텀 파츠 주문 (USDT)", {
+                                이름: customerInfo.name,
+                                연락처: customerInfo.phone,
+                                이메일: customerInfo.email,
+                                차종: carModel,
+                                주문부품: partType.name,
+                                재질: material.name,
+                                결제방식: 'USDT (Arbitrum)',
+                                결제금액: `${usdtAmount} USDT`,
+                                TXID: txid,
+                                요구사항: customerInfo.customOrder,
+                                추가메모: customerInfo.notes
+                              });
                               setStep('success');
                             }}
                             className="w-full bg-green-500 text-black py-4 font-bold tracking-widest uppercase hover:bg-green-400 transition-colors rounded-sm flex items-center justify-center gap-2 mt-4"
