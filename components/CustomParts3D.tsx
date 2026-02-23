@@ -290,7 +290,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
           )}
 
           {step === 'payment' && (
-            <div className="space-y-6 animate-fade-in flex flex-col h-full pb-10">
+            <div className="space-y-6 animate-fade-in pb-10">
               <div className="bg-neutral-800 p-5 rounded-sm border border-neutral-700 space-y-3 mb-4 shrink-0">
                 <h4 className="text-white font-serif border-b border-neutral-700 pb-2 mb-3">Order Summary</h4>
                 <div className="flex justify-between text-sm text-neutral-400">
@@ -315,7 +315,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
                 </div>
               </div>
 
-              <div className="flex-1 min-h-[50px]">
+              <div className="mt-4">
                 {isEtc ? (
                   <button
                     onClick={async () => {
@@ -433,7 +433,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
                             }}
                             className="w-full bg-green-500 text-black py-4 font-bold tracking-widest uppercase hover:bg-green-400 transition-colors rounded-sm flex items-center justify-center gap-2 mt-4"
                           >
-                            <CheckCircle className="w-4 h-4" /> Confirm Payment Request
+                            <CheckCircle className="w-4 h-4" /> Complete Order Request
                           </button>
                         </div>
                       )}
