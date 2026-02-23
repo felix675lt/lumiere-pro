@@ -91,12 +91,12 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in" onClick={onClose}>
       <div
-        className="relative w-full max-w-4xl bg-neutral-900 border border-neutral-800 rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+        className="relative w-full max-w-4xl bg-neutral-900 border border-neutral-800 rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] max-w-[95vw]"
         onClick={e => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 z-10 p-2 text-neutral-500 hover:text-white transition-colors"
+          className="absolute top-4 right-4 md:top-6 md:right-6 z-10 p-2 text-neutral-500 hover:text-white transition-colors bg-neutral-900/50 rounded-full"
         >
           <X className="w-6 h-6" />
         </button>
@@ -118,7 +118,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
         </div>
 
         {/* Right Section - Content */}
-        <div className="w-full md:w-2/3 bg-neutral-900 flex flex-col h-full overflow-y-auto p-10">
+        <div className="w-full md:w-2/3 bg-neutral-900 overflow-y-auto flex-1 min-h-0 p-6 md:p-10">
 
           {/* Step Breadcrumbs */}
           <div className="flex items-center gap-2 mb-10 text-xs uppercase tracking-widest text-neutral-600">
@@ -176,7 +176,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
                 </div>
               </div>
 
-              <div className="bg-neutral-800 p-4 rounded-sm flex justify-between items-center mt-6 border border-neutral-700">
+              <div className="bg-neutral-800 p-4 rounded-sm flex justify-between items-center mt-6 border border-neutral-700 shrink-0">
                 <span className="text-sm text-neutral-400">Estimated Base Price</span>
                 <span className="text-xl font-serif text-gold-400">
                   {isEtc ? t('estimator.ask_separately') : `$${estimatedPrice.toLocaleString()}`}
@@ -185,7 +185,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
 
               <button
                 onClick={handleNext}
-                className="w-full bg-white text-black py-4 font-bold tracking-widest uppercase hover:bg-neutral-200 transition-colors rounded-sm flex items-center justify-center gap-2 mt-8"
+                className="w-full bg-white text-black py-4 font-bold tracking-widest uppercase hover:bg-neutral-200 transition-colors rounded-sm flex items-center justify-center gap-2 mt-8 shrink-0"
               >
                 <span>Continue to Details</span>
                 <ChevronRight className="w-4 h-4" />
@@ -452,7 +452,7 @@ export const CustomParts3D: React.FC<CustomParts3DProps> = ({ isOpen, onClose })
           )}
 
           {step === 'success' && (
-            <div className="flex flex-col items-center justify-center py-10 animate-fade-in text-center h-full">
+            <div className="flex flex-col items-center justify-center py-10 animate-fade-in text-center min-h-[400px]">
               <div className="w-20 h-20 bg-gold-500/10 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="w-10 h-10 text-gold-500" />
               </div>
