@@ -1,8 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { CarSize, CoverageType, FilmGrade } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getConciergeAdvice = async (
   carModel: string,
   carSize: CarSize,
@@ -10,6 +8,13 @@ export const getConciergeAdvice = async (
   grade: FilmGrade
 ): Promise<string> => {
   try {
+    // @ts-ignore
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+    if (!apiKey) {
+      console.warn('Gemini API key is missing. Concierge features will return fallback text.');
+      return "문의량이 많아 실시간 분석이 지연되고 있습니다. 전문 상담원에게 직접 문의해 주시면 상세히 안내해 드리겠습니다.";
+    }
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = `
       당신은 하이엔드 럭셔리 자동차 디테일링 스튜디오의 전문 컨시어지입니다. 
       고객이 차량의 PPF(Paint Protection Film) 시공에 대해 문의하고 있습니다.
