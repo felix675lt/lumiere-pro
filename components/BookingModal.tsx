@@ -3,6 +3,7 @@ import { X, Calendar as CalendarIcon, CheckCircle, ShieldCheck, ChevronLeft, Che
 import { useTranslation, Trans } from 'react-i18next';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { sendAdminNotification } from '../src/utils/email';
+import { StripePayment } from './StripePayment';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -34,7 +35,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
   // Payment State
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'BANK' | 'USDT' | 'PAYPAL'>('BANK');
+  const [paymentMethod, setPaymentMethod] = useState<'BANK' | 'USDT' | 'STRIPE' | 'PAYPAL'>('BANK');
   const [usdtRate, setUsdtRate] = useState<number>(1450); // Fallback rate
   const [txid, setTxid] = useState('');
   const [isRateLoading, setIsRateLoading] = useState(false);
@@ -128,7 +129,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
       예약지역: region,
       예약일정: `${selectedDate?.toLocaleDateString()} ${selectedTime}`,
       결제방식: paymentMethod === 'BANK' ? '무통장 입금' : 'USDT (Arbitrum)',
-      예치금결제액: paymentMethod === 'BANK' ? `₩${depositAmount.toLocaleString()}` : `${usdtAmount} USDT`,
+      예치금결제액: paymentMethod === 'BANK' ? `₩${depositAmount.toLocaleString()}` : paymentMethod === 'USDT' ? `${usdtAmount} USDT` : `$${usdtAmount} USD`,
       총예상견적: `₩${estimatedPrice.toLocaleString()}`,
       TXID: paymentMethod === 'USDT' ? txid : '해당없음'
     };
@@ -420,11 +421,19 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                     <Layers className="w-4 h-4" /> {t('booking.arbitrum')}
                   </button>
                   <button
+                    onClick={() => setPaymentMethod('STRIPE')}
+                    className={`flex-1 py-4 border rounded-sm transition-all flex items-center justify-center gap-2 ${paymentMethod === 'STRIPE' ? 'bg-gold-500 text-black border-gold-500 font-bold' : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
+                  >
+                    Credit Card
+                  </button>
+                  {/*
+                  <button
                     onClick={() => setPaymentMethod('PAYPAL')}
                     className={`flex-1 py-4 border rounded-sm transition-all flex items-center justify-center gap-2 ${paymentMethod === 'PAYPAL' ? 'bg-gold-500 text-black border-gold-500 font-bold' : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
                   >
                     PayPal
                   </button>
+                  */}
                 </div>
 
                 {/* Payment Details */}
@@ -455,7 +464,29 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                         </div>
                       </div>
                     </div>
-                  ) : paymentMethod === 'PAYPAL' ? (
+                  ) : paymentMethod === 'STRIPE' ? (
+                    <div className="space-y-6">
+                      <div className="bg-neutral-900 border border-neutral-700 p-6 rounded-sm animate-fade-in">
+                        <StripePayment
+                          amount={parseFloat(usdtAmount)}
+                          onSuccess={async () => {
+                            await sendAdminNotification("예약 접수 (Stripe)", {
+                              고객명: customerName,
+                              연락처: customerPhone,
+                              예약차종: carModel,
+                              예약지역: region,
+                              예약일정: `${selectedDate?.toLocaleDateString()} ${selectedTime}`,
+                              결제방식: 'Credit Card',
+                              예치금결제액: `$${usdtAmount} USD`,
+                              총예상견적: `₩${estimatedPrice.toLocaleString()}`
+                            });
+                            setStep('success');
+                          }}
+                          onError={(err) => console.error(err)}
+                        />
+                      </div>
+                    </div>
+                  ) : paymentMethod === 'PAYPAL' ? null /* (
                     <div className="space-y-6">
                       <div className="bg-neutral-900 border border-neutral-700 p-6 rounded-sm animate-fade-in">
                         <PayPalScriptProvider options={initialOptions}>
@@ -468,7 +499,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                                     description: `Lumiere Booking Deposit for ${carModel}`,
                                     amount: {
                                       currency_code: "USD",
-                                      value: (depositAmount / usdtRate).toFixed(2),
+                                      value: usdtAmount,
                                     },
                                   },
                                 ],
@@ -480,63 +511,63 @@ export const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, reg
                         </PayPalScriptProvider>
                       </div>
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <div className="flex flex-col items-center justify-center p-8 bg-white/5 border border-dashed border-neutral-600 rounded-sm">
-                        <div className="w-32 h-32 bg-white rounded-sm mb-4 flex items-center justify-center overflow-hidden">
-                          <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=0x5c9856c32eaff6659aae211d816b45a8b50de756`}
-                            alt="Arbitrum QR Code"
-                            className="w-full h-full"
-                          />
+                  ) */ : (
+                      <div className="space-y-6">
+                        <div className="flex flex-col items-center justify-center p-8 bg-white/5 border border-dashed border-neutral-600 rounded-sm">
+                          <div className="w-32 h-32 bg-white rounded-sm mb-4 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=0x5c9856c32eaff6659aae211d816b45a8b50de756`}
+                              alt="Arbitrum QR Code"
+                              className="w-full h-full"
+                            />
+                          </div>
+                          <p className="text-neutral-400 text-xs">{t('booking.scanArbitrum')}</p>
                         </div>
-                        <p className="text-neutral-400 text-xs">{t('booking.scanArbitrum')}</p>
-                      </div>
 
-                      <div className="bg-neutral-800 p-4 rounded-sm flex justify-between items-center">
-                        <div className="text-xs">
-                          <p className="text-neutral-400 mb-1">{t('booking.exchangeRate')}</p>
-                          <p className="text-blue-400 font-bold">1 USDT ≈ ₩{usdtRate.toLocaleString()}</p>
+                        <div className="bg-neutral-800 p-4 rounded-sm flex justify-between items-center">
+                          <div className="text-xs">
+                            <p className="text-neutral-400 mb-1">{t('booking.exchangeRate')}</p>
+                            <p className="text-blue-400 font-bold">1 USDT ≈ ₩{usdtRate.toLocaleString()}</p>
+                          </div>
+                          <button onClick={fetchUsdtRate} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                            <RefreshCw className={`w-4 h-4 text-neutral-400 ${isRateLoading ? 'animate-spin' : ''}`} />
+                          </button>
                         </div>
-                        <button onClick={fetchUsdtRate} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                          <RefreshCw className={`w-4 h-4 text-neutral-400 ${isRateLoading ? 'animate-spin' : ''}`} />
-                        </button>
-                      </div>
 
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">{t('booking.network')}</span>
-                          <span className="text-white font-bold text-blue-500">Arbitrum One</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">{t('booking.address')}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-mono text-xs truncate max-w-[150px]">0x5c98...e756</span>
-                            <Copy className="w-3 h-3 text-neutral-500 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText('0x5c9856c32eaff6659aae211d816b45a8b50de756')} />
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between py-2 border-b border-neutral-800">
+                            <span className="text-neutral-500">{t('booking.network')}</span>
+                            <span className="text-white font-bold text-blue-500">Arbitrum One</span>
+                          </div>
+                          <div className="flex justify-between py-2 border-b border-neutral-800">
+                            <span className="text-neutral-500">{t('booking.address')}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-white font-mono text-xs truncate max-w-[150px]">0x5c98...e756</span>
+                              <Copy className="w-3 h-3 text-neutral-500 cursor-pointer hover:text-white" onClick={() => navigator.clipboard.writeText('0x5c9856c32eaff6659aae211d816b45a8b50de756')} />
+                            </div>
+                          </div>
+                          <div className="flex justify-between py-2 border-b border-neutral-800">
+                            <span className="text-neutral-500">{t('booking.totalUSDT')}</span>
+                            <span className="text-white font-bold">{usdtAmount} USDT</span>
                           </div>
                         </div>
-                        <div className="flex justify-between py-2 border-b border-neutral-800">
-                          <span className="text-neutral-500">{t('booking.totalUSDT')}</span>
-                          <span className="text-white font-bold">{usdtAmount} USDT</span>
+                        <div>
+                          <label className="block text-xs uppercase tracking-widest text-neutral-500 mb-2">{t('booking.txid')}</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 8f2a"
+                            maxLength={10}
+                            value={txid}
+                            onChange={(e) => setTxid(e.target.value)}
+                            className="w-full bg-neutral-900 border border-neutral-700 p-3 text-white focus:border-blue-500 focus:outline-none transition-colors placeholder-neutral-600 rounded-sm text-center font-mono uppercase"
+                          />
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-xs uppercase tracking-widest text-neutral-500 mb-2">{t('booking.txid')}</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 8f2a"
-                          maxLength={10}
-                          value={txid}
-                          onChange={(e) => setTxid(e.target.value)}
-                          className="w-full bg-neutral-900 border border-neutral-700 p-3 text-white focus:border-blue-500 focus:outline-none transition-colors placeholder-neutral-600 rounded-sm text-center font-mono uppercase"
-                        />
-                      </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
 
-              {paymentMethod !== 'PAYPAL' && (
+              {paymentMethod !== 'PAYPAL' && paymentMethod !== 'STRIPE' && (
                 <button
                   onClick={handlePayment}
                   className={`w-full py-4 font-bold tracking-widest uppercase transition-colors flex items-center justify-center gap-2 rounded-sm
